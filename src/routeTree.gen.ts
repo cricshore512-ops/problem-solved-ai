@@ -10,33 +10,128 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ForProfessionalsRouteImport } from './routes/for-professionals'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as ServicesRouteImport } from './routes/services'
+import { Route as VideoConsultationRouteImport } from './routes/video-consultation'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiAssistantRoute = AiAssistantRouteImport.update({
+  id: '/ai-assistant',
+  path: '/ai-assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForProfessionalsRoute = ForProfessionalsRouteImport.update({
+  id: '/for-professionals',
+  path: '/for-professionals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VideoConsultationRoute = VideoConsultationRouteImport.update({
+  id: '/video-consultation',
+  path: '/video-consultation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/ai-assistant': typeof AiAssistantRoute
+  '/contact': typeof ContactRoute
+  '/for-professionals': typeof ForProfessionalsRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/services': typeof ServicesRoute
+  '/video-consultation': typeof VideoConsultationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/ai-assistant': typeof AiAssistantRoute
+  '/contact': typeof ContactRoute
+  '/for-professionals': typeof ForProfessionalsRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/services': typeof ServicesRoute
+  '/video-consultation': typeof VideoConsultationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/ai-assistant': typeof AiAssistantRoute
+  '/contact': typeof ContactRoute
+  '/for-professionals': typeof ForProfessionalsRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/services': typeof ServicesRoute
+  '/video-consultation': typeof VideoConsultationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/ai-assistant'
+    | '/contact'
+    | '/for-professionals'
+    | '/how-it-works'
+    | '/services'
+    | '/video-consultation'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/ai-assistant'
+    | '/contact'
+    | '/for-professionals'
+    | '/how-it-works'
+    | '/services'
+    | '/video-consultation'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/ai-assistant'
+    | '/contact'
+    | '/for-professionals'
+    | '/how-it-works'
+    | '/services'
+    | '/video-consultation'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AiAssistantRoute: typeof AiAssistantRoute
+  ContactRoute: typeof ContactRoute
+  ForProfessionalsRoute: typeof ForProfessionalsRoute
+  HowItWorksRoute: typeof HowItWorksRoute
+  ServicesRoute: typeof ServicesRoute
+  VideoConsultationRoute: typeof VideoConsultationRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +143,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-assistant': {
+      id: '/ai-assistant'
+      path: '/ai-assistant'
+      fullPath: '/ai-assistant'
+      preLoaderRoute: typeof AiAssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/for-professionals': {
+      id: '/for-professionals'
+      path: '/for-professionals'
+      fullPath: '/for-professionals'
+      preLoaderRoute: typeof ForProfessionalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/video-consultation': {
+      id: '/video-consultation'
+      path: '/video-consultation'
+      fullPath: '/video-consultation'
+      preLoaderRoute: typeof VideoConsultationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AiAssistantRoute: AiAssistantRoute,
+  ContactRoute: ContactRoute,
+  ForProfessionalsRoute: ForProfessionalsRoute,
+  HowItWorksRoute: HowItWorksRoute,
+  ServicesRoute: ServicesRoute,
+  VideoConsultationRoute: VideoConsultationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
