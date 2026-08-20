@@ -3,7 +3,7 @@ import { Camera, FileText, ShieldCheck } from "lucide-react";
 import { AiAssistantDemo } from "@/components/site/AiAssistantDemo";
 import { GlassCard, PageHero, Section, SectionHeading } from "@/components/site/Primitives";
 import { Reveal } from "@/components/site/Reveal";
-import { FinalCta } from "./index";
+import { FinalCta } from "@/components/site/FinalCta";
 
 export const Route = createFileRoute("/ai-assistant")({
   head: () => ({
