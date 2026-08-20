@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
+import { Route as ForProfessionalsRouteImport } from './routes/for-professionals'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as VideoConsultationRouteImport } from './routes/video-consultation'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const AiAssistantRoute = AiAssistantRouteImport.update({
   id: '/ai-assistant',
   path: '/ai-assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForProfessionalsRoute = ForProfessionalsRouteImport.update({
+  id: '/for-professionals',
+  path: '/for-professionals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HowItWorksRoute = HowItWorksRouteImport.update({
@@ -34,39 +41,71 @@ const ServicesRoute = ServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VideoConsultationRoute = VideoConsultationRouteImport.update({
+  id: '/video-consultation',
+  path: '/video-consultation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ai-assistant': typeof AiAssistantRoute
+  '/for-professionals': typeof ForProfessionalsRoute
   '/how-it-works': typeof HowItWorksRoute
   '/services': typeof ServicesRoute
+  '/video-consultation': typeof VideoConsultationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ai-assistant': typeof AiAssistantRoute
+  '/for-professionals': typeof ForProfessionalsRoute
   '/how-it-works': typeof HowItWorksRoute
   '/services': typeof ServicesRoute
+  '/video-consultation': typeof VideoConsultationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ai-assistant': typeof AiAssistantRoute
+  '/for-professionals': typeof ForProfessionalsRoute
   '/how-it-works': typeof HowItWorksRoute
   '/services': typeof ServicesRoute
+  '/video-consultation': typeof VideoConsultationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ai-assistant' | '/how-it-works' | '/services'
+  fullPaths:
+    | '/'
+    | '/ai-assistant'
+    | '/for-professionals'
+    | '/how-it-works'
+    | '/services'
+    | '/video-consultation'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ai-assistant' | '/how-it-works' | '/services'
-  id: '__root__' | '/' | '/ai-assistant' | '/how-it-works' | '/services'
+  to:
+    | '/'
+    | '/ai-assistant'
+    | '/for-professionals'
+    | '/how-it-works'
+    | '/services'
+    | '/video-consultation'
+  id:
+    | '__root__'
+    | '/'
+    | '/ai-assistant'
+    | '/for-professionals'
+    | '/how-it-works'
+    | '/services'
+    | '/video-consultation'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AiAssistantRoute: typeof AiAssistantRoute
+  ForProfessionalsRoute: typeof ForProfessionalsRoute
   HowItWorksRoute: typeof HowItWorksRoute
   ServicesRoute: typeof ServicesRoute
+  VideoConsultationRoute: typeof VideoConsultationRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -85,6 +124,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/for-professionals': {
+      id: '/for-professionals'
+      path: '/for-professionals'
+      fullPath: '/for-professionals'
+      preLoaderRoute: typeof ForProfessionalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/how-it-works': {
       id: '/how-it-works'
       path: '/how-it-works'
@@ -99,14 +145,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/video-consultation': {
+      id: '/video-consultation'
+      path: '/video-consultation'
+      fullPath: '/video-consultation'
+      preLoaderRoute: typeof VideoConsultationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AiAssistantRoute: AiAssistantRoute,
+  ForProfessionalsRoute: ForProfessionalsRoute,
   HowItWorksRoute: HowItWorksRoute,
   ServicesRoute: ServicesRoute,
+  VideoConsultationRoute: VideoConsultationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
