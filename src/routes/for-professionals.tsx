@@ -86,8 +86,8 @@ const revenue = [
 ];
 
 function ForProfessionalsPage() {
-  const [active, setActive] = useState(tabs[1].id);
-  const current = tabs.find((t) => t.id === active) ?? tabs[1];
+  const [active, setActive] = useState<string>(tabs[1]!.id);
+  const current = tabs.find((t) => t.id === active) ?? tabs[1]!;
 
   return (
     <>

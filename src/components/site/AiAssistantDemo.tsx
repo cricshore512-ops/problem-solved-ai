@@ -26,7 +26,7 @@ type Scenario = {
   summary: string[];
 };
 
-export const scenarios: Scenario[] = [
+const scenarioList: Scenario[] = [
   {
     id: "fridge",
     label: "My refrigerator is not cooling",
@@ -113,6 +113,8 @@ export const scenarios: Scenario[] = [
   },
 ];
 
+export const scenarios = scenarioList as [Scenario, ...Scenario[]];
+
 const matches = [
   { name: "Professional A", score: 82 },
   { name: "Professional B", score: 96, best: true },
@@ -131,7 +133,7 @@ export function AiAssistantDemo({ compact = false }: { compact?: boolean }) {
       setTyping(false);
       return;
     }
-    const next = scenario.turns[visible];
+    const next = scenario.turns[visible]!;
     setTyping(next.role === "ai");
     const delay = next.role === "ai" ? 1300 : 850;
     const timer = setTimeout(() => {
