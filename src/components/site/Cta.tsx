@@ -10,7 +10,7 @@ export const ctaVariants = cva(
       variant: {
         primary:
           "bg-[var(--gradient-brand)] text-primary-foreground shadow-glow hover:scale-[1.03] hover:brightness-110 active:scale-100",
-        gold: "bg-gold text-primary-foreground hover:scale-[1.03] hover:brightness-110",
+        gold: "bg-gold text-background hover:scale-[1.03] hover:brightness-110",
         ghost:
           "glass text-foreground hover:border-primary/60 hover:text-primary hover:-translate-y-0.5",
         success: "bg-success text-primary-foreground hover:scale-[1.03] hover:brightness-110",
