@@ -28,7 +28,7 @@ export function SiteFooter() {
       <Container className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
           <Link to="/" className="flex items-center gap-2.5">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-[var(--gradient-brand)]">
+            <span className="flex size-9 items-center justify-center rounded-xl bg-brand">
               <Sparkles className="size-5 text-primary-foreground" />
             </span>
             <span className="font-display text-lg font-bold">

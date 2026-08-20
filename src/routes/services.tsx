@@ -163,7 +163,7 @@ function ServicesPage() {
             <Reveal key={p.phase} delay={i * 120}>
               <GlassCard className="h-full">
                 <div
-                  className="mb-4 h-1 rounded-full bg-[var(--gradient-brand)]"
+                  className="mb-4 h-1 rounded-full bg-brand"
                   style={{ width: `${35 + i * 30}%` }}
                 />
                 <p className="text-xs font-semibold tracking-[0.18em] text-primary uppercase">

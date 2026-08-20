@@ -35,9 +35,9 @@ export function SiteHeader() {
     >
       <Container className="flex h-16 items-center justify-between gap-4 sm:h-20">
         <Link to="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
-          <span className="relative flex size-9 items-center justify-center rounded-xl bg-[var(--gradient-brand)]">
+          <span className="relative flex size-9 items-center justify-center rounded-xl bg-brand">
             <Sparkles className="size-5 text-primary-foreground" />
-            <span className="absolute inset-0 rounded-xl bg-[var(--gradient-brand)] blur-md opacity-60 animate-pulse-glow" />
+            <span className="absolute inset-0 rounded-xl bg-brand blur-md opacity-60 animate-pulse-glow" />
           </span>
           <span className="font-display text-lg font-bold tracking-tight">
             ONE <span className="text-gradient">SOLVE</span>

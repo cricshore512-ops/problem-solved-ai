@@ -158,11 +158,11 @@ export function AiAssistantDemo({ compact = false }: { compact?: boolean }) {
 
   return (
     <div className="glass relative overflow-hidden rounded-3xl p-4 shadow-glow sm:p-6">
-      <div className="pointer-events-none absolute -top-24 -right-16 size-56 rounded-full bg-[var(--gradient-brand)] opacity-25 blur-3xl animate-pulse-glow" />
+      <div className="pointer-events-none absolute -top-24 -right-16 size-56 rounded-full bg-brand opacity-25 blur-3xl animate-pulse-glow" />
 
       <div className="relative flex items-center justify-between gap-3 border-b border-border pb-4">
         <div className="flex items-center gap-3">
-          <span className="flex size-10 items-center justify-center rounded-2xl bg-[var(--gradient-brand)]">
+          <span className="flex size-10 items-center justify-center rounded-2xl bg-brand">
             <Bot className="size-5 text-primary-foreground" />
           </span>
           <div>

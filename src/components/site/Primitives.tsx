@@ -82,7 +82,7 @@ export function GlassCard({
         className,
       )}
     >
-      <div className="pointer-events-none absolute inset-x-0 -top-24 h-40 bg-[var(--gradient-brand)] opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-20" />
+      <div className="pointer-events-none absolute inset-x-0 -top-24 h-40 bg-brand opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-20" />
       <div className="relative">{children}</div>
     </div>
   );
