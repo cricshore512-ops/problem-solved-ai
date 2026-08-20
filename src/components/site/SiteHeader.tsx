@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import logoAsset from "@/assets/one-solve-logo.png.asset.json";
 import { CtaLink } from "./Cta";
 import { Container } from "./Primitives";
 import { cn } from "@/lib/utils";
@@ -35,9 +36,9 @@ export function SiteHeader() {
     >
       <Container className="flex h-16 items-center justify-between gap-4 sm:h-20">
         <Link to="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
-          <span className="relative flex size-9 items-center justify-center rounded-xl bg-brand">
-            <Sparkles className="size-5 text-primary-foreground" />
-            <span className="absolute inset-0 rounded-xl bg-brand blur-md opacity-60 animate-pulse-glow" />
+          <span className="relative flex size-9 items-center justify-center overflow-hidden rounded-xl bg-white">
+            <img src={logoAsset.url} alt="One Solve logo" className="size-8 object-contain" />
+            <span className="pointer-events-none absolute inset-0 rounded-xl bg-brand blur-md opacity-30 animate-pulse-glow" />
           </span>
           <span className="font-display text-lg font-bold tracking-tight">
             ONE <span className="text-gradient">SOLVE</span>
