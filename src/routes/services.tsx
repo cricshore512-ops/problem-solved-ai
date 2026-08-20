@@ -161,7 +161,7 @@ function ServicesPage() {
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {phases.map((p, i) => (
             <Reveal key={p.phase} delay={i * 120}>
-              <GlassCard className="h-full" style={undefined}>
+              <GlassCard className="h-full">
                 <div
                   className="mb-4 h-1 rounded-full bg-[var(--gradient-brand)]"
                   style={{ width: `${35 + i * 30}%` }}
