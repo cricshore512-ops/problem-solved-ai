@@ -53,7 +53,12 @@ function AboutPage() {
             The Future of <span className="text-gradient">Human Services</span>
           </>
         }
-        subtitle="A world where the right help is always just a conversation away."
+        subtitle={
+          <>
+            A world where the right help is always just a conversation away. Founded and owned by
+            Sanuj Pandey.
+          </>
+        }
       >
         <CtaLink to="/contact" variant="ghost" size="lg">
           Get in touch
