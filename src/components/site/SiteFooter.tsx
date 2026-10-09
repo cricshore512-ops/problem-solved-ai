@@ -40,7 +40,7 @@ export function SiteFooter() {
           </p>
           <p className="mt-4 text-sm text-muted-foreground">
             Founded & owned by{" "}
-            <span className="font-semibold text-foreground">Sanuj Pandey</span>
+            <span className="font-semibold text-foreground">Anuj Pandey</span>
           </p>
         </div>
         {groups.map((group) => (
@@ -64,7 +64,7 @@ export function SiteFooter() {
         ))}
       </Container>
       <Container className="flex flex-col gap-2 border-t border-border py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-        <p>© {new Date().getFullYear()} One Solve. All rights reserved. Owned by Sanuj Pandey.</p>
+        <p>© {new Date().getFullYear()} One Solve. All rights reserved. Owned by Anuj Pandey.</p>
         <p>Launching with focused home services. Expanding into a wider expert ecosystem.</p>
       </Container>
     </footer>
