@@ -28,13 +28,20 @@ export const Route = createFileRoute("/api/chat")({
       POST: async ({ request }) => {
         const authorization = request.headers.get("authorization");
         const token = authorization?.startsWith("Bearer ") ? authorization.slice(7) : undefined;
-        if (!token) return Response.json({ message: "Sign in to use and save the assistant." }, { status: 401 });
+        if (!token)
+          return Response.json(
+            { message: "Sign in to use and save the assistant." },
+            { status: 401 },
+          );
 
         const url = process.env["SUPABASE_URL"];
         const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
         const apiKey = process.env["LOVABLE_API_KEY"];
         if (!url || !key || !apiKey) {
-          return Response.json({ message: "The assistant is not configured yet." }, { status: 500 });
+          return Response.json(
+            { message: "The assistant is not configured yet." },
+            { status: 500 },
+          );
         }
 
         const supabase = createClient<Database>(url, key, {
@@ -51,7 +58,10 @@ export const Route = createFileRoute("/api/chat")({
         });
         const { data: authData, error: authError } = await supabase.auth.getUser(token);
         if (authError || !authData.user) {
-          return Response.json({ message: "Your session expired. Please sign in again." }, { status: 401 });
+          return Response.json(
+            { message: "Your session expired. Please sign in again." },
+            { status: 401 },
+          );
         }
 
         let payload: { messages?: UIMessage[]; mode?: AssistantMode };
@@ -64,7 +74,10 @@ export const Route = createFileRoute("/api/chat")({
           return Response.json({ message: "A message is required." }, { status: 400 });
         }
         if (payload.messages.length > 120) {
-          return Response.json({ message: "This conversation is too long. Please clear it and begin again." }, { status: 400 });
+          return Response.json(
+            { message: "This conversation is too long. Please clear it and begin again." },
+            { status: 400 },
+          );
         }
 
         const mode: AssistantMode = payload.mode === "study" ? "study" : "problem";
@@ -79,7 +92,8 @@ export const Route = createFileRoute("/api/chat")({
         }
 
         const latestUser = [...messages].reverse().find((message) => message.role === "user");
-        if (!latestUser) return Response.json({ message: "A user message is required." }, { status: 400 });
+        if (!latestUser)
+          return Response.json({ message: "A user message is required." }, { status: 400 });
 
         const { error: userSaveError } = await supabase.from("ai_chat_messages").upsert(
           {
@@ -122,14 +136,21 @@ export const Route = createFileRoute("/api/chat")({
             },
             onError: (error) => {
               console.error("AI stream error", error);
-              return error instanceof Error ? error.message : "The assistant could not complete this answer.";
+              return error instanceof Error
+                ? error.message
+                : "The assistant could not complete this answer.";
             },
           });
           return call.wrapResponse(response);
         } catch (error) {
           console.error("AI request failed", error);
           return Response.json(
-            { message: error instanceof Error ? error.message : "The assistant is temporarily unavailable." },
+            {
+              message:
+                error instanceof Error
+                  ? error.message
+                  : "The assistant is temporarily unavailable.",
+            },
             { status: 500 },
           );
         }
