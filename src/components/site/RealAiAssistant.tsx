@@ -94,8 +94,8 @@ function ChatExperience({ userId, initialMessages }: { userId: string; initialMe
         },
         prepareSendMessagesRequest: ({ messages, headers, api, credentials }) => ({
           api,
-          credentials,
-          headers,
+          ...(credentials !== undefined ? { credentials } : {}),
+          ...(headers !== undefined ? { headers } : {}),
           body: { messages, mode: modeRef.current },
         }),
       }),
