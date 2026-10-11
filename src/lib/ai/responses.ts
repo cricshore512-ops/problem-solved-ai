@@ -1,5 +1,5 @@
 import { createOpenAI } from "@ai-sdk/openai";
-import { streamText, type ModelMessage } from "ai";
+import { stepCountIs, streamText, type ModelMessage, type ToolSet } from "ai";
 import {
   createLovableAiGatewayRunIdFetch,
   getLovableAiGatewayRunId,
@@ -11,6 +11,7 @@ export function createResponsesCall(
   config: { apiKey: string; model: string },
   messages: ModelMessage[],
   instructions: string,
+  tools?: ToolSet,
 ) {
   const runIdFetch = createLovableAiGatewayRunIdFetch(getLovableAiGatewayRunId(request));
   const provider = createOpenAI({
@@ -27,6 +28,7 @@ export function createResponsesCall(
     model: provider.responses(config.model),
     instructions,
     messages,
+    ...(tools ? { tools, stopWhen: stepCountIs(4) } : {}),
     abortSignal: request.signal,
     maxRetries: 0,
     providerOptions: {
