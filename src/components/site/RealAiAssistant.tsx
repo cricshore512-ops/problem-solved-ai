@@ -46,8 +46,13 @@ export function RealAiAssistant() {
     void loadSession();
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
-        setUserId(session?.user.id);
-        setInitialMessages([]);
+        // Only react when the account actually changes; token refreshes and tab
+        // focus also fire SIGNED_IN and must not reset an in-progress answer.
+        setUserId((previous) => {
+          const next = session?.user.id;
+          if (previous !== next) setInitialMessages([]);
+          return next;
+        });
       }
     });
     return () => {
@@ -87,7 +92,7 @@ export function RealAiAssistant() {
   if (loadingHistory) return <AssistantSkeleton />;
   return (
     <ChatExperience
-      key={`${userId}-${initialMessages.length}`}
+      key={userId}
       userId={userId}
       initialMessages={initialMessages}
     />
