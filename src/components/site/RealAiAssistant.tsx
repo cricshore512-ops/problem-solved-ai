@@ -221,11 +221,11 @@ function ChatExperience({
           {messages.length === 0 ? (
             <ConversationEmptyState
               icon={<BrainCircuit className="size-10 text-primary" />}
-              title={mode === "problem" ? "Tell me the problem" : "What are you studying?"}
+              title={mode === "problem" ? "Ask me anything" : "What are you studying?"}
               description={
                 mode === "problem"
-                  ? "I’ll divide it into clear parts and give you a practical solution."
-                  : "I’ll explain it step by step and help you understand it."
+                  ? "Any question or problem — I’ll give you a clear, relevant answer."
+                  : "I’ll explain it step by step, and I can answer any other question too."
               }
             />
           ) : (
