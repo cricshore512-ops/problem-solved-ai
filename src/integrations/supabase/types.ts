@@ -44,6 +44,86 @@ export type Database = {
         }
         Relationships: []
       }
+      service_categories: {
+        Row: {
+          active: boolean
+          consult_options: string[]
+          description: string
+          id: string
+          name: string
+          typical_issues: string[]
+        }
+        Insert: {
+          active?: boolean
+          consult_options?: string[]
+          description: string
+          id: string
+          name: string
+          typical_issues?: string[]
+        }
+        Update: {
+          active?: boolean
+          consult_options?: string[]
+          description?: string
+          id?: string
+          name?: string
+          typical_issues?: string[]
+        }
+        Relationships: []
+      }
+      service_requests: {
+        Row: {
+          category_id: string
+          client_key: string
+          contact_phone: string | null
+          created_at: string
+          id: string
+          location: string
+          preferred_time: string | null
+          problem_summary: string
+          reference: string
+          status: string
+          urgency: string
+          user_id: string
+        }
+        Insert: {
+          category_id: string
+          client_key: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          location: string
+          preferred_time?: string | null
+          problem_summary: string
+          reference?: string
+          status?: string
+          urgency: string
+          user_id: string
+        }
+        Update: {
+          category_id?: string
+          client_key?: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          location?: string
+          preferred_time?: string | null
+          problem_summary?: string
+          reference?: string
+          status?: string
+          urgency?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_requests_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
