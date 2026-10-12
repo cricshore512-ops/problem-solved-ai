@@ -56,7 +56,7 @@ function AboutPage() {
         subtitle={
           <>
             A world where the right help is always just a conversation away. Founded and owned by
-            Anuj Pandey.
+            Sanuj Pandey.
           </>
         }
       >
