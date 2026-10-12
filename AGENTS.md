@@ -12,3 +12,4 @@
 <!-- LOVABLE:END -->
 
 - Keep the ONE SOLVE assistant as one account-scoped conversation stored as AI SDK UI message parts, because the gateway is stateless and users need cross-device continuity.
+- Assistant tools may only read the public service catalogue and create DRAFT service requests; actual submission happens via a user-confirmed authenticated server function, so the model can never commit actions itself.

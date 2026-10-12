@@ -1,6 +1,17 @@
 import { useChat } from "@ai-sdk/react";
+import { useServerFn } from "@tanstack/react-start";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { BookOpen, BrainCircuit, LogOut, ShieldCheck, Trash2, Wrench } from "lucide-react";
+import {
+  BookOpen,
+  BrainCircuit,
+  Copy,
+  LogOut,
+  RefreshCw,
+  ShieldCheck,
+  Trash2,
+  Wrench,
+} from "lucide-react";
+import { createServiceRequest } from "@/lib/service-requests.functions";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -88,26 +99,33 @@ export function RealAiAssistant() {
   }, [userId]);
 
   if (!sessionReady) return <AssistantSkeleton />;
-  if (!userId) return <SignInPanel />;
   if (loadingHistory) return <AssistantSkeleton />;
   return (
     <ChatExperience
-      key={userId}
+      key={userId ?? "guest"}
       userId={userId}
-      initialMessages={initialMessages}
+      initialMessages={userId ? initialMessages : []}
     />
   );
+}
+
+function readInitialQuestion() {
+  if (typeof window === "undefined") return "";
+  const q = new URLSearchParams(window.location.search).get("q")?.trim() ?? "";
+  if (q) window.history.replaceState(null, "", window.location.pathname);
+  return q.slice(0, 2000);
 }
 
 function ChatExperience({
   userId,
   initialMessages,
 }: {
-  userId: string;
+  userId: string | undefined;
   initialMessages: UIMessage[];
 }) {
   const [mode, setMode] = useState<AssistantMode>("problem");
   const [draft, setDraft] = useState("");
+  const [showSignIn, setShowSignIn] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const modeRef = useRef<AssistantMode>(mode);
   modeRef.current = mode;
@@ -116,7 +134,7 @@ function ChatExperience({
     () =>
       new DefaultChatTransport<UIMessage>({
         api: "/api/chat",
-        headers: async () => {
+        headers: async (): Promise<Record<string, string>> => {
           const { data } = await supabase.auth.getSession();
           return data.session ? { Authorization: `Bearer ${data.session.access_token}` } : {};
         },
@@ -130,28 +148,39 @@ function ChatExperience({
     [],
   );
 
-  const { messages, sendMessage, status, stop, error, setMessages, clearError } = useChat({
-    id: "one-solve-conversation",
-    messages: initialMessages,
-    transport,
-    onError: (chatError) => toast.error(chatError.message || "The assistant could not respond."),
-    onFinish: () => textareaRef.current?.focus(),
-  });
+  const { messages, sendMessage, regenerate, status, stop, error, setMessages, clearError } =
+    useChat({
+      id: `one-solve-${userId ?? "guest"}`,
+      messages: initialMessages,
+      transport,
+      onError: (chatError) => toast.error(chatError.message || "The assistant could not respond."),
+      onFinish: () => textareaRef.current?.focus(),
+    });
   const busy = status === "submitted" || status === "streaming";
 
   useEffect(() => {
     textareaRef.current?.focus();
   }, [mode]);
 
+  const sentInitial = useRef(false);
+  useEffect(() => {
+    if (sentInitial.current) return;
+    sentInitial.current = true;
+    const q = readInitialQuestion();
+    if (q) void sendMessage({ text: q });
+  }, [sendMessage]);
+
   const clearConversation = useCallback(async () => {
     if (busy) stop();
-    const { error: clearErrorResult } = await supabase
-      .from("ai_chat_messages")
-      .delete()
-      .eq("user_id", userId);
-    if (clearErrorResult) {
-      toast.error("Conversation could not be cleared.");
-      return;
+    if (userId) {
+      const { error: clearErrorResult } = await supabase
+        .from("ai_chat_messages")
+        .delete()
+        .eq("user_id", userId);
+      if (clearErrorResult) {
+        toast.error("Conversation could not be cleared.");
+        return;
+      }
     }
     setMessages([]);
     clearError();
@@ -178,22 +207,33 @@ function ChatExperience({
             variant="ghost"
             size="icon"
             onClick={() => void clearConversation()}
-            aria-label="Clear conversation"
-            title="Clear conversation"
+            aria-label="New conversation"
+            title="New conversation"
           >
             <Trash2 className="size-4" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => void supabase.auth.signOut()}
-            aria-label="Sign out"
-            title="Sign out"
-          >
-            <LogOut className="size-4" />
-          </Button>
+          {userId ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => void supabase.auth.signOut()}
+              aria-label="Sign out"
+              title="Sign out"
+            >
+              <LogOut className="size-4" />
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => setShowSignIn((v) => !v)}>
+              {showSignIn ? "Close" : "Sign in to save"}
+            </Button>
+          )}
         </div>
       </div>
+      {!userId && showSignIn ? (
+        <div className="border-b border-border p-4">
+          <SignInPanel />
+        </div>
+      ) : null}
 
       <div className="border-b border-border px-4 py-3 sm:px-6">
         <div
@@ -229,24 +269,103 @@ function ChatExperience({
               }
             />
           ) : (
-            messages.map((message) => (
-              <Message key={message.id} from={message.role}>
-                <MessageContent>
-                  {message.parts.map((part, index) =>
-                    part.type === "text" ? (
-                      <MessageResponse key={`${message.id}-${index}`}>{part.text}</MessageResponse>
-                    ) : null,
-                  )}
-                </MessageContent>
-              </Message>
-            ))
+            messages.map((message, mIndex) => {
+              const isLastAssistant =
+                message.role === "assistant" && mIndex === messages.length - 1;
+              const text = message.parts
+                .map((p) => (p.type === "text" ? p.text : ""))
+                .join("\n")
+                .trim();
+              return (
+                <Message key={message.id} from={message.role}>
+                  <MessageContent>
+                    {message.parts.map((part, index) => {
+                      if (part.type === "text")
+                        return (
+                          <MessageResponse key={`${message.id}-${index}`}>
+                            {part.text}
+                          </MessageResponse>
+                        );
+                      if (
+                        part.type === "tool-propose_service_request" &&
+                        part.state === "output-available"
+                      )
+                        return (
+                          <ServiceRequestCard
+                            key={`${message.id}-${index}`}
+                            draftKey={`${message.id}-${index}`}
+                            output={part.output as ProposalOutput}
+                            signedIn={Boolean(userId)}
+                            onSignIn={() => setShowSignIn(true)}
+                          />
+                        );
+                      if (
+                        part.type === "tool-list_service_categories" &&
+                        part.state !== "output-available" &&
+                        part.state !== "output-error"
+                      )
+                        return (
+                          <Shimmer key={`${message.id}-${index}`} className="text-xs">
+                            Checking ONE SOLVE services…
+                          </Shimmer>
+                        );
+                      return null;
+                    })}
+                  </MessageContent>
+                  {message.role === "assistant" && text && !(busy && isLastAssistant) ? (
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label="Copy answer"
+                        title="Copy"
+                        onClick={() =>
+                          void navigator.clipboard
+                            .writeText(text)
+                            .then(() => toast.success("Copied"))
+                            .catch(() => toast.error("Could not copy"))
+                        }
+                      >
+                        <Copy className="size-3.5" />
+                      </Button>
+                      {isLastAssistant ? (
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label="Regenerate answer"
+                          title="Regenerate"
+                          onClick={() => {
+                            clearError();
+                            void regenerate();
+                          }}
+                        >
+                          <RefreshCw className="size-3.5" />
+                        </Button>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </Message>
+              );
+            })
           )}
           {status === "submitted" ? (
             <Shimmer className="text-sm">Thinking through the problem…</Shimmer>
           ) : null}
           {error ? (
             <Alert variant="destructive">
-              <AlertDescription>{error.message}</AlertDescription>
+              <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
+                <span>{error.message || "Something went wrong."}</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    clearError();
+                    void regenerate();
+                  }}
+                >
+                  <RefreshCw className="size-3.5" /> Retry
+                </Button>
+              </AlertDescription>
             </Alert>
           ) : null}
         </ConversationContent>
@@ -277,13 +396,115 @@ function ChatExperience({
           <PromptInputFooter>
             <PromptInputTools>
               <span className="flex items-center gap-1.5 px-1 text-xs text-muted-foreground">
-                <ShieldCheck className="size-3.5" /> Saved securely
+                <ShieldCheck className="size-3.5" />
+                {userId ? "Saved to your account" : "Guest chat — not saved"}
               </span>
             </PromptInputTools>
             <PromptInputSubmit status={status} onStop={stop} disabled={!draft.trim() && !busy} />
           </PromptInputFooter>
         </PromptInput>
       </div>
+    </div>
+  );
+}
+
+type ProposalOutput = {
+  error?: string;
+  category_id?: string;
+  category_name?: string;
+  problem_summary?: string;
+  location?: string;
+  urgency?: "low" | "normal" | "urgent" | "emergency";
+  preferred_time?: string | null;
+};
+
+function ServiceRequestCard({
+  draftKey,
+  output,
+  signedIn,
+  onSignIn,
+}: {
+  draftKey: string;
+  output: ProposalOutput;
+  signedIn: boolean;
+  onSignIn: () => void;
+}) {
+  const submit = useServerFn(createServiceRequest);
+  const [phone, setPhone] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [result, setResult] = useState<{ reference: string; status: string }>();
+  if (output.error || !output.category_id || !output.problem_summary || !output.location)
+    return null;
+
+  const confirm = async () => {
+    setSubmitting(true);
+    try {
+      const row = await submit({
+        data: {
+          clientKey: draftKey,
+          categoryId: output.category_id!,
+          problemSummary: output.problem_summary!,
+          location: output.location!,
+          urgency: output.urgency ?? "normal",
+          preferredTime: output.preferred_time ?? null,
+          contactPhone: phone.trim() || null,
+        },
+      });
+      setResult(row);
+      toast.success(`Service request ${row.reference} saved`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not submit the request.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="my-2 space-y-3 rounded-xl border border-primary/40 bg-primary/5 p-4 text-sm">
+      <p className="font-semibold">
+        {result ? "Service request submitted" : "Draft service request — please review"}
+      </p>
+      <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+        <dt className="text-muted-foreground">Service</dt>
+        <dd>{output.category_name}</dd>
+        <dt className="text-muted-foreground">Problem</dt>
+        <dd>{output.problem_summary}</dd>
+        <dt className="text-muted-foreground">Location</dt>
+        <dd>{output.location}</dd>
+        <dt className="text-muted-foreground">Urgency</dt>
+        <dd className="capitalize">{output.urgency ?? "normal"}</dd>
+        {output.preferred_time ? (
+          <>
+            <dt className="text-muted-foreground">Preferred time</dt>
+            <dd>{output.preferred_time}</dd>
+          </>
+        ) : null}
+      </dl>
+      {result ? (
+        <p className="text-success">
+          Reference <strong>{result.reference}</strong> · status: {result.status}. Our team will
+          review it; no professional is assigned yet.
+        </p>
+      ) : signedIn ? (
+        <div className="flex flex-wrap items-end gap-2">
+          <div className="min-w-40 flex-1 space-y-1">
+            <Label htmlFor={`phone-${draftKey}`}>Contact phone (optional)</Label>
+            <Input
+              id={`phone-${draftKey}`}
+              value={phone}
+              maxLength={30}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+          <Button onClick={() => void confirm()} disabled={submitting}>
+            {submitting ? "Submitting…" : "Confirm & submit"}
+          </Button>
+        </div>
+      ) : (
+        <Button variant="outline" onClick={onSignIn}>
+          Sign in to submit this request
+        </Button>
+      )}
     </div>
   );
 }
@@ -334,7 +555,7 @@ function SignInPanel() {
 
   const handleGoogle = async () => {
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: `${window.location.origin}/ai-assistant`,
     });
     if (result.error) toast.error(result.error.message);
   };

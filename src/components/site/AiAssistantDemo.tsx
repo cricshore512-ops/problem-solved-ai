@@ -256,15 +256,10 @@ export function AiAssistantDemo({ compact = false }: { compact?: boolean }) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            const text = input.trim().toLowerCase();
+            const text = input.trim();
             if (!text) return;
-            const found =
-              scenarios.find((s) =>
-                [s.id, ...s.label.toLowerCase().split(" ")].some(
-                  (word) => word.length > 3 && text.includes(word),
-                ),
-              ) ?? scenarios[0];
-            start(found);
+            // Hand the real question to the live AI assistant.
+            window.location.href = `/ai-assistant?q=${encodeURIComponent(text.slice(0, 2000))}`;
           }}
           className="flex items-center gap-2 rounded-2xl border border-input bg-background/60 p-2"
         >
