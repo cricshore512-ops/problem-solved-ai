@@ -88,26 +88,33 @@ export function RealAiAssistant() {
   }, [userId]);
 
   if (!sessionReady) return <AssistantSkeleton />;
-  if (!userId) return <SignInPanel />;
   if (loadingHistory) return <AssistantSkeleton />;
   return (
     <ChatExperience
-      key={userId}
+      key={userId ?? "guest"}
       userId={userId}
-      initialMessages={initialMessages}
+      initialMessages={userId ? initialMessages : []}
     />
   );
+}
+
+function readInitialQuestion() {
+  if (typeof window === "undefined") return "";
+  const q = new URLSearchParams(window.location.search).get("q")?.trim() ?? "";
+  if (q) window.history.replaceState(null, "", window.location.pathname);
+  return q.slice(0, 2000);
 }
 
 function ChatExperience({
   userId,
   initialMessages,
 }: {
-  userId: string;
+  userId: string | undefined;
   initialMessages: UIMessage[];
 }) {
   const [mode, setMode] = useState<AssistantMode>("problem");
   const [draft, setDraft] = useState("");
+  const [showSignIn, setShowSignIn] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const modeRef = useRef<AssistantMode>(mode);
   modeRef.current = mode;
@@ -116,7 +123,7 @@ function ChatExperience({
     () =>
       new DefaultChatTransport<UIMessage>({
         api: "/api/chat",
-        headers: async () => {
+        headers: async (): Promise<Record<string, string>> => {
           const { data } = await supabase.auth.getSession();
           return data.session ? { Authorization: `Bearer ${data.session.access_token}` } : {};
         },
@@ -130,28 +137,39 @@ function ChatExperience({
     [],
   );
 
-  const { messages, sendMessage, status, stop, error, setMessages, clearError } = useChat({
-    id: "one-solve-conversation",
-    messages: initialMessages,
-    transport,
-    onError: (chatError) => toast.error(chatError.message || "The assistant could not respond."),
-    onFinish: () => textareaRef.current?.focus(),
-  });
+  const { messages, sendMessage, regenerate, status, stop, error, setMessages, clearError } =
+    useChat({
+      id: `one-solve-${userId ?? "guest"}`,
+      messages: initialMessages,
+      transport,
+      onError: (chatError) => toast.error(chatError.message || "The assistant could not respond."),
+      onFinish: () => textareaRef.current?.focus(),
+    });
   const busy = status === "submitted" || status === "streaming";
 
   useEffect(() => {
     textareaRef.current?.focus();
   }, [mode]);
 
+  const sentInitial = useRef(false);
+  useEffect(() => {
+    if (sentInitial.current) return;
+    sentInitial.current = true;
+    const q = readInitialQuestion();
+    if (q) void sendMessage({ text: q });
+  }, [sendMessage]);
+
   const clearConversation = useCallback(async () => {
     if (busy) stop();
-    const { error: clearErrorResult } = await supabase
-      .from("ai_chat_messages")
-      .delete()
-      .eq("user_id", userId);
-    if (clearErrorResult) {
-      toast.error("Conversation could not be cleared.");
-      return;
+    if (userId) {
+      const { error: clearErrorResult } = await supabase
+        .from("ai_chat_messages")
+        .delete()
+        .eq("user_id", userId);
+      if (clearErrorResult) {
+        toast.error("Conversation could not be cleared.");
+        return;
+      }
     }
     setMessages([]);
     clearError();
