@@ -1,6 +1,17 @@
 import { useChat } from "@ai-sdk/react";
+import { useServerFn } from "@tanstack/react-start";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { BookOpen, BrainCircuit, LogOut, ShieldCheck, Trash2, Wrench } from "lucide-react";
+import {
+  BookOpen,
+  BrainCircuit,
+  Copy,
+  LogOut,
+  RefreshCw,
+  ShieldCheck,
+  Trash2,
+  Wrench,
+} from "lucide-react";
+import { createServiceRequest } from "@/lib/service-requests.functions";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -397,6 +408,107 @@ function ChatExperience({
   );
 }
 
+type ProposalOutput = {
+  error?: string;
+  category_id?: string;
+  category_name?: string;
+  problem_summary?: string;
+  location?: string;
+  urgency?: "low" | "normal" | "urgent" | "emergency";
+  preferred_time?: string | null;
+};
+
+function ServiceRequestCard({
+  draftKey,
+  output,
+  signedIn,
+  onSignIn,
+}: {
+  draftKey: string;
+  output: ProposalOutput;
+  signedIn: boolean;
+  onSignIn: () => void;
+}) {
+  const submit = useServerFn(createServiceRequest);
+  const [phone, setPhone] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [result, setResult] = useState<{ reference: string; status: string }>();
+  if (output.error || !output.category_id || !output.problem_summary || !output.location)
+    return null;
+
+  const confirm = async () => {
+    setSubmitting(true);
+    try {
+      const row = await submit({
+        data: {
+          clientKey: draftKey,
+          categoryId: output.category_id!,
+          problemSummary: output.problem_summary!,
+          location: output.location!,
+          urgency: output.urgency ?? "normal",
+          preferredTime: output.preferred_time ?? null,
+          contactPhone: phone.trim() || null,
+        },
+      });
+      setResult(row);
+      toast.success(`Service request ${row.reference} saved`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not submit the request.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="my-2 space-y-3 rounded-xl border border-primary/40 bg-primary/5 p-4 text-sm">
+      <p className="font-semibold">
+        {result ? "Service request submitted" : "Draft service request — please review"}
+      </p>
+      <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+        <dt className="text-muted-foreground">Service</dt>
+        <dd>{output.category_name}</dd>
+        <dt className="text-muted-foreground">Problem</dt>
+        <dd>{output.problem_summary}</dd>
+        <dt className="text-muted-foreground">Location</dt>
+        <dd>{output.location}</dd>
+        <dt className="text-muted-foreground">Urgency</dt>
+        <dd className="capitalize">{output.urgency ?? "normal"}</dd>
+        {output.preferred_time ? (
+          <>
+            <dt className="text-muted-foreground">Preferred time</dt>
+            <dd>{output.preferred_time}</dd>
+          </>
+        ) : null}
+      </dl>
+      {result ? (
+        <p className="text-success">
+          Reference <strong>{result.reference}</strong> · status: {result.status}. Our team will
+          review it; no professional is assigned yet.
+        </p>
+      ) : signedIn ? (
+        <div className="flex flex-wrap items-end gap-2">
+          <div className="min-w-40 flex-1 space-y-1">
+            <Label htmlFor={`phone-${draftKey}`}>Contact phone (optional)</Label>
+            <Input
+              id={`phone-${draftKey}`}
+              value={phone}
+              maxLength={30}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+          <Button onClick={() => void confirm()} disabled={submitting}>
+            {submitting ? "Submitting…" : "Confirm & submit"}
+          </Button>
+        </div>
+      ) : (
+        <Button variant="outline" onClick={onSignIn}>
+          Sign in to submit this request
+        </Button>
+      )}
+    </div>
+  );
+}
+
 function ModeButton({
   active,
   onClick,
@@ -443,7 +555,7 @@ function SignInPanel() {
 
   const handleGoogle = async () => {
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: `${window.location.origin}/ai-assistant`,
     });
     if (result.error) toast.error(result.error.message);
   };
