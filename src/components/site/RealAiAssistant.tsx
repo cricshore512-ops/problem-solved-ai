@@ -196,22 +196,33 @@ function ChatExperience({
             variant="ghost"
             size="icon"
             onClick={() => void clearConversation()}
-            aria-label="Clear conversation"
-            title="Clear conversation"
+            aria-label="New conversation"
+            title="New conversation"
           >
             <Trash2 className="size-4" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => void supabase.auth.signOut()}
-            aria-label="Sign out"
-            title="Sign out"
-          >
-            <LogOut className="size-4" />
-          </Button>
+          {userId ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => void supabase.auth.signOut()}
+              aria-label="Sign out"
+              title="Sign out"
+            >
+              <LogOut className="size-4" />
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => setShowSignIn((v) => !v)}>
+              {showSignIn ? "Close" : "Sign in to save"}
+            </Button>
+          )}
         </div>
       </div>
+      {!userId && showSignIn ? (
+        <div className="border-b border-border p-4">
+          <SignInPanel />
+        </div>
+      ) : null}
 
       <div className="border-b border-border px-4 py-3 sm:px-6">
         <div
@@ -247,24 +258,103 @@ function ChatExperience({
               }
             />
           ) : (
-            messages.map((message) => (
-              <Message key={message.id} from={message.role}>
-                <MessageContent>
-                  {message.parts.map((part, index) =>
-                    part.type === "text" ? (
-                      <MessageResponse key={`${message.id}-${index}`}>{part.text}</MessageResponse>
-                    ) : null,
-                  )}
-                </MessageContent>
-              </Message>
-            ))
+            messages.map((message, mIndex) => {
+              const isLastAssistant =
+                message.role === "assistant" && mIndex === messages.length - 1;
+              const text = message.parts
+                .map((p) => (p.type === "text" ? p.text : ""))
+                .join("\n")
+                .trim();
+              return (
+                <Message key={message.id} from={message.role}>
+                  <MessageContent>
+                    {message.parts.map((part, index) => {
+                      if (part.type === "text")
+                        return (
+                          <MessageResponse key={`${message.id}-${index}`}>
+                            {part.text}
+                          </MessageResponse>
+                        );
+                      if (
+                        part.type === "tool-propose_service_request" &&
+                        part.state === "output-available"
+                      )
+                        return (
+                          <ServiceRequestCard
+                            key={`${message.id}-${index}`}
+                            draftKey={`${message.id}-${index}`}
+                            output={part.output as ProposalOutput}
+                            signedIn={Boolean(userId)}
+                            onSignIn={() => setShowSignIn(true)}
+                          />
+                        );
+                      if (
+                        part.type === "tool-list_service_categories" &&
+                        part.state !== "output-available" &&
+                        part.state !== "output-error"
+                      )
+                        return (
+                          <Shimmer key={`${message.id}-${index}`} className="text-xs">
+                            Checking ONE SOLVE services…
+                          </Shimmer>
+                        );
+                      return null;
+                    })}
+                  </MessageContent>
+                  {message.role === "assistant" && text && !(busy && isLastAssistant) ? (
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label="Copy answer"
+                        title="Copy"
+                        onClick={() =>
+                          void navigator.clipboard
+                            .writeText(text)
+                            .then(() => toast.success("Copied"))
+                            .catch(() => toast.error("Could not copy"))
+                        }
+                      >
+                        <Copy className="size-3.5" />
+                      </Button>
+                      {isLastAssistant ? (
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label="Regenerate answer"
+                          title="Regenerate"
+                          onClick={() => {
+                            clearError();
+                            void regenerate();
+                          }}
+                        >
+                          <RefreshCw className="size-3.5" />
+                        </Button>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </Message>
+              );
+            })
           )}
           {status === "submitted" ? (
             <Shimmer className="text-sm">Thinking through the problem…</Shimmer>
           ) : null}
           {error ? (
             <Alert variant="destructive">
-              <AlertDescription>{error.message}</AlertDescription>
+              <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
+                <span>{error.message || "Something went wrong."}</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    clearError();
+                    void regenerate();
+                  }}
+                >
+                  <RefreshCw className="size-3.5" /> Retry
+                </Button>
+              </AlertDescription>
             </Alert>
           ) : null}
         </ConversationContent>
@@ -295,7 +385,8 @@ function ChatExperience({
           <PromptInputFooter>
             <PromptInputTools>
               <span className="flex items-center gap-1.5 px-1 text-xs text-muted-foreground">
-                <ShieldCheck className="size-3.5" /> Saved securely
+                <ShieldCheck className="size-3.5" />
+                {userId ? "Saved to your account" : "Guest chat — not saved"}
               </span>
             </PromptInputTools>
             <PromptInputSubmit status={status} onStop={stop} disabled={!draft.trim() && !busy} />
