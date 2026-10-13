@@ -41,7 +41,7 @@ import { cn } from "@/lib/utils";
 // Copies of the site hosted outside Lovable (e.g. Vercel) have no AI key on
 // their own server, so they talk to the Lovable-hosted chat endpoint.
 const HOSTED_CHAT_URL =
-  "https://project--04c859f1-9455-4ef3-925f-a08a51cd804c.lovable.app/api/chat";
+  "https://connect-an-expert.lovable.app/api/chat";
 
 function chatEndpoint() {
   if (typeof window === "undefined") return "/api/chat";
