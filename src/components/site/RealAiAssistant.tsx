@@ -38,6 +38,39 @@ import { lovable } from "@/integrations/lovable";
 import type { Json } from "@/integrations/supabase/types";
 import { cn } from "@/lib/utils";
 
+// Copies of the site hosted outside Lovable (e.g. Vercel) have no AI key on
+// their own server, so they talk to the Lovable-hosted chat endpoint.
+const HOSTED_CHAT_URL =
+  "https://project--04c859f1-9455-4ef3-925f-a08a51cd804c.lovable.app/api/chat";
+
+function chatEndpoint() {
+  if (typeof window === "undefined") return "/api/chat";
+  const host = window.location.hostname;
+  if (
+    host === "localhost" ||
+    host.endsWith(".lovable.app") ||
+    host.endsWith(".lovableproject.com")
+  ) {
+    return "/api/chat";
+  }
+  return (import.meta.env["VITE_CHAT_API_URL"] as string | undefined) || HOSTED_CHAT_URL;
+}
+
+function friendlyError(error: Error) {
+  const raw = error.message || "";
+  try {
+    const body = JSON.parse(raw) as { message?: string; requestId?: string };
+    if (body.message)
+      return body.requestId ? `${body.message} (ref ${body.requestId})` : body.message;
+  } catch {
+    /* not JSON */
+  }
+  if (/failed to fetch|networkerror|load failed/i.test(raw)) {
+    return "Could not reach the assistant. Check your connection and retry.";
+  }
+  return raw || "The assistant could not respond. Please retry.";
+}
+
 type AssistantMode = "problem" | "study";
 
 export function RealAiAssistant() {
@@ -133,7 +166,7 @@ function ChatExperience({
   const transport = useMemo(
     () =>
       new DefaultChatTransport<UIMessage>({
-        api: "/api/chat",
+        api: chatEndpoint(),
         headers: async (): Promise<Record<string, string>> => {
           const { data } = await supabase.auth.getSession();
           return data.session ? { Authorization: `Bearer ${data.session.access_token}` } : {};
@@ -153,7 +186,7 @@ function ChatExperience({
       id: `one-solve-${userId ?? "guest"}`,
       messages: initialMessages,
       transport,
-      onError: (chatError) => toast.error(chatError.message || "The assistant could not respond."),
+      onError: (chatError) => toast.error(friendlyError(chatError)),
       onFinish: () => textareaRef.current?.focus(),
     });
   const busy = status === "submitted" || status === "streaming";
@@ -354,7 +387,7 @@ function ChatExperience({
           {error ? (
             <Alert variant="destructive">
               <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
-                <span>{error.message || "Something went wrong."}</span>
+                <span>{friendlyError(error)}</span>
                 <Button
                   size="sm"
                   variant="outline"
@@ -581,10 +614,22 @@ function SignInPanel() {
           onClick={() => void handleGoogle()}
         >
           <svg viewBox="0 0 48 48" className="size-5" aria-hidden="true">
-            <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6.1C12.3 13.6 17.7 9.5 24 9.5z" />
-            <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z" />
-            <path fill="#FBBC05" d="M10.4 28.7A14.500 14.500 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.8-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.600 10.800l7.800-6.100z" />
-            <path fill="#34A853" d="M24 48c6.500 0 11.900-2.100 15.900-5.800l-7.500-5.800c-2.100 1.400-4.800 2.300-8.400 2.300-6.300 0-11.700-4.100-13.600-9.800l-7.800 6.100C6.500 42.600 14.600 48 24 48z" />
+            <path
+              fill="#EA4335"
+              d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6.1C12.3 13.6 17.7 9.5 24 9.5z"
+            />
+            <path
+              fill="#4285F4"
+              d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M10.4 28.7A14.500 14.500 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.8-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.600 10.800l7.800-6.100z"
+            />
+            <path
+              fill="#34A853"
+              d="M24 48c6.500 0 11.900-2.100 15.900-5.800l-7.500-5.800c-2.100 1.400-4.800 2.300-8.400 2.300-6.300 0-11.700-4.100-13.600-9.800l-7.800 6.100C6.500 42.600 14.600 48 24 48z"
+            />
           </svg>
           Continue with Google
         </Button>
