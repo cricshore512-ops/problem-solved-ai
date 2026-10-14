@@ -35,7 +35,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
-import type { Json } from "@/integrations/supabase/types";
 import { cn } from "@/lib/utils";
 
 // Copies of the site hosted outside Lovable (e.g. Vercel) have no AI key on
@@ -76,8 +75,6 @@ type AssistantMode = "problem" | "study";
 export function RealAiAssistant() {
   const [sessionReady, setSessionReady] = useState(false);
   const [userId, setUserId] = useState<string>();
-  const [initialMessages, setInitialMessages] = useState<UIMessage[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -94,8 +91,7 @@ export function RealAiAssistant() {
         // focus also fire SIGNED_IN and must not reset an in-progress answer.
         setUserId((previous) => {
           const next = session?.user.id;
-          if (previous !== next) setInitialMessages([]);
-          return next;
+          return previous === next ? previous : next;
         });
       }
     });
@@ -105,41 +101,14 @@ export function RealAiAssistant() {
     };
   }, []);
 
+  // Chats start fresh on every visit: remove anything saved in earlier sessions.
   useEffect(() => {
     if (!userId) return;
-    let active = true;
-    setLoadingHistory(true);
-    void supabase
-      .from("ai_chat_messages")
-      .select("message_id, role, parts")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: true })
-      .then(({ data, error }) => {
-        if (!active) return;
-        if (error) toast.error("Saved conversation could not be loaded.");
-        setInitialMessages(
-          (data ?? []).map((row) => ({
-            id: row.message_id,
-            role: row.role as UIMessage["role"],
-            parts: row.parts as UIMessage["parts"],
-          })),
-        );
-        setLoadingHistory(false);
-      });
-    return () => {
-      active = false;
-    };
+    void supabase.from("ai_chat_messages").delete().eq("user_id", userId);
   }, [userId]);
 
   if (!sessionReady) return <AssistantSkeleton />;
-  if (loadingHistory) return <AssistantSkeleton />;
-  return (
-    <ChatExperience
-      key={userId ?? "guest"}
-      userId={userId}
-      initialMessages={userId ? initialMessages : []}
-    />
-  );
+  return <ChatExperience key={userId ?? "guest"} userId={userId} />;
 }
 
 function readInitialQuestion() {
@@ -149,13 +118,7 @@ function readInitialQuestion() {
   return q.slice(0, 2000);
 }
 
-function ChatExperience({
-  userId,
-  initialMessages,
-}: {
-  userId: string | undefined;
-  initialMessages: UIMessage[];
-}) {
+function ChatExperience({ userId }: { userId: string | undefined }) {
   const [mode, setMode] = useState<AssistantMode>("problem");
   const [draft, setDraft] = useState("");
   const [showSignIn, setShowSignIn] = useState(false);
@@ -184,7 +147,6 @@ function ChatExperience({
   const { messages, sendMessage, regenerate, status, stop, error, setMessages, clearError } =
     useChat({
       id: `one-solve-${userId ?? "guest"}`,
-      messages: initialMessages,
       transport,
       onError: (chatError) => toast.error(friendlyError(chatError)),
       onFinish: () => textareaRef.current?.focus(),
@@ -203,23 +165,13 @@ function ChatExperience({
     if (q) void sendMessage({ text: q });
   }, [sendMessage]);
 
-  const clearConversation = useCallback(async () => {
+  const clearConversation = useCallback(() => {
     if (busy) stop();
-    if (userId) {
-      const { error: clearErrorResult } = await supabase
-        .from("ai_chat_messages")
-        .delete()
-        .eq("user_id", userId);
-      if (clearErrorResult) {
-        toast.error("Conversation could not be cleared.");
-        return;
-      }
-    }
     setMessages([]);
     clearError();
     setDraft("");
     textareaRef.current?.focus();
-  }, [busy, clearError, setMessages, stop, userId]);
+  }, [busy, clearError, setMessages, stop]);
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-5xl flex-col overflow-hidden rounded-2xl border border-border bg-surface/50 shadow-glow">
@@ -257,7 +209,7 @@ function ChatExperience({
             </Button>
           ) : (
             <Button variant="outline" size="sm" onClick={() => setShowSignIn((v) => !v)}>
-              {showSignIn ? "Close" : "Sign in to save"}
+              {showSignIn ? "Close" : "Sign in"}
             </Button>
           )}
         </div>
@@ -430,7 +382,7 @@ function ChatExperience({
             <PromptInputTools>
               <span className="flex items-center gap-1.5 px-1 text-xs text-muted-foreground">
                 <ShieldCheck className="size-3.5" />
-                {userId ? "Saved to your account" : "Guest chat — not saved"}
+                Fresh chat — history clears when you leave
               </span>
             </PromptInputTools>
             <PromptInputSubmit status={status} onStop={stop} disabled={!draft.trim() && !busy} />
@@ -603,7 +555,7 @@ function SignInPanel() {
         />
         <h1 className="mt-4 text-2xl font-bold">Sign in to ONE SOLVE AI</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Your single conversation is saved securely and available when you return.
+          Sign in to submit service requests. Chats always start fresh and are never saved.
         </p>
       </div>
       <div className="mt-6 space-y-4">
