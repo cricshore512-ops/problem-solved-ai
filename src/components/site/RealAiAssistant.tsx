@@ -76,8 +76,6 @@ type AssistantMode = "problem" | "study";
 export function RealAiAssistant() {
   const [sessionReady, setSessionReady] = useState(false);
   const [userId, setUserId] = useState<string>();
-  const [initialMessages, setInitialMessages] = useState<UIMessage[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -94,8 +92,7 @@ export function RealAiAssistant() {
         // focus also fire SIGNED_IN and must not reset an in-progress answer.
         setUserId((previous) => {
           const next = session?.user.id;
-          if (previous !== next) setInitialMessages([]);
-          return next;
+          return previous === next ? previous : next;
         });
       }
     });
@@ -105,41 +102,14 @@ export function RealAiAssistant() {
     };
   }, []);
 
+  // Chats start fresh on every visit: remove anything saved in earlier sessions.
   useEffect(() => {
     if (!userId) return;
-    let active = true;
-    setLoadingHistory(true);
-    void supabase
-      .from("ai_chat_messages")
-      .select("message_id, role, parts")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: true })
-      .then(({ data, error }) => {
-        if (!active) return;
-        if (error) toast.error("Saved conversation could not be loaded.");
-        setInitialMessages(
-          (data ?? []).map((row) => ({
-            id: row.message_id,
-            role: row.role as UIMessage["role"],
-            parts: row.parts as UIMessage["parts"],
-          })),
-        );
-        setLoadingHistory(false);
-      });
-    return () => {
-      active = false;
-    };
+    void supabase.from("ai_chat_messages").delete().eq("user_id", userId);
   }, [userId]);
 
   if (!sessionReady) return <AssistantSkeleton />;
-  if (loadingHistory) return <AssistantSkeleton />;
-  return (
-    <ChatExperience
-      key={userId ?? "guest"}
-      userId={userId}
-      initialMessages={userId ? initialMessages : []}
-    />
-  );
+  return <ChatExperience key={userId ?? "guest"} userId={userId} />;
 }
 
 function readInitialQuestion() {
@@ -149,13 +119,7 @@ function readInitialQuestion() {
   return q.slice(0, 2000);
 }
 
-function ChatExperience({
-  userId,
-  initialMessages,
-}: {
-  userId: string | undefined;
-  initialMessages: UIMessage[];
-}) {
+function ChatExperience({ userId }: { userId: string | undefined }) {
   const [mode, setMode] = useState<AssistantMode>("problem");
   const [draft, setDraft] = useState("");
   const [showSignIn, setShowSignIn] = useState(false);
