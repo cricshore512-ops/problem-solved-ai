@@ -35,7 +35,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
-import type { Json } from "@/integrations/supabase/types";
 import { cn } from "@/lib/utils";
 
 // Copies of the site hosted outside Lovable (e.g. Vercel) have no AI key on
