@@ -231,20 +231,6 @@ async function handleChat(request: Request, requestId: string): Promise<Response
     const response = call.result.toUIMessageStreamResponse({
       originalMessages: messages,
       sendReasoning: true,
-      onFinish: async ({ responseMessage, isAborted }) => {
-        if (isAborted || !userId) return;
-        const { error } = await supabase.from("ai_chat_messages").upsert(
-          {
-            user_id: userId,
-            message_id: responseMessage.id,
-            role: "assistant",
-            parts: responseMessage.parts as Json,
-            mode,
-          },
-          { onConflict: "user_id,message_id" },
-        );
-        if (error) console.error("Failed to save assistant AI message", error.code);
-      },
       onError: (error) => {
         console.error(
           `[chat ${requestId}] AI stream error`,
