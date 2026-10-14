@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { convertToModelMessages, tool, type UIMessage } from "ai";
 import { z } from "zod";
-import type { Database, Json } from "@/integrations/supabase/types";
+import type { Database } from "@/integrations/supabase/types";
 import { createResponsesCall } from "@/lib/ai/responses";
 
 type AssistantMode = "problem" | "study";
@@ -142,21 +142,10 @@ async function handleChat(request: Request, requestId: string): Promise<Response
     );
   }
 
-  // Signed-in users get saved history; guests can chat without saving.
-  const authorization = request.headers.get("authorization");
-  const token = authorization?.startsWith("Bearer ") ? authorization.slice(7) : undefined;
-  const supabase = makeClient(url, key, token);
-  let userId: string | undefined;
-  if (token) {
-    const { data, error } = await supabase.auth.getUser(token);
-    if (error || !data.user) {
-      return Response.json(
-        { message: "Your session expired. Please sign in again." },
-        { status: 401 },
-      );
-    }
-    userId = data.user.id;
-  }
+  // Chats are not saved anywhere: every visit starts fresh, so no auth check
+  // is needed and the catalogue reads use the publishable key.
+  const supabase = makeClient(url, key);
+
 
   let payload: { messages?: UIMessage[]; mode?: AssistantMode };
   try {
