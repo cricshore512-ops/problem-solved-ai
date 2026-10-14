@@ -556,7 +556,7 @@ function SignInPanel() {
         />
         <h1 className="mt-4 text-2xl font-bold">Sign in to ONE SOLVE AI</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Your single conversation is saved securely and available when you return.
+          Sign in to submit service requests. Chats always start fresh and are never saved.
         </p>
       </div>
       <div className="mt-6 space-y-4">
