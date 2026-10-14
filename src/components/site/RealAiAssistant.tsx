@@ -210,7 +210,7 @@ function ChatExperience({ userId }: { userId: string | undefined }) {
             </Button>
           ) : (
             <Button variant="outline" size="sm" onClick={() => setShowSignIn((v) => !v)}>
-              {showSignIn ? "Close" : "Sign in to save"}
+              {showSignIn ? "Close" : "Sign in"}
             </Button>
           )}
         </div>
@@ -383,7 +383,7 @@ function ChatExperience({ userId }: { userId: string | undefined }) {
             <PromptInputTools>
               <span className="flex items-center gap-1.5 px-1 text-xs text-muted-foreground">
                 <ShieldCheck className="size-3.5" />
-                {userId ? "Saved to your account" : "Guest chat — not saved"}
+                Fresh chat — history clears when you leave
               </span>
             </PromptInputTools>
             <PromptInputSubmit status={status} onStop={stop} disabled={!draft.trim() && !busy} />
