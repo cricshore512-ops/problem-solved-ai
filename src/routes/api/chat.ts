@@ -184,22 +184,6 @@ async function handleChat(request: Request, requestId: string): Promise<Response
     );
   }
 
-  if (userId) {
-    const { error } = await supabase
-      .from("ai_chat_messages")
-      .upsert(
-        {
-          user_id: userId,
-          message_id: latestUser.id,
-          role: "user",
-          parts: latestUser.parts as Json,
-          mode,
-        },
-        { onConflict: "user_id,message_id" },
-      );
-    if (error) console.error("Failed to save user AI message", error.code);
-  }
-
   const tools = {
     list_service_categories: tool({
       description:
