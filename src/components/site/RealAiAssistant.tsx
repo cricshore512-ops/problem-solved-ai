@@ -148,7 +148,6 @@ function ChatExperience({ userId }: { userId: string | undefined }) {
   const { messages, sendMessage, regenerate, status, stop, error, setMessages, clearError } =
     useChat({
       id: `one-solve-${userId ?? "guest"}`,
-      messages: initialMessages,
       transport,
       onError: (chatError) => toast.error(friendlyError(chatError)),
       onFinish: () => textareaRef.current?.focus(),
@@ -167,23 +166,13 @@ function ChatExperience({ userId }: { userId: string | undefined }) {
     if (q) void sendMessage({ text: q });
   }, [sendMessage]);
 
-  const clearConversation = useCallback(async () => {
+  const clearConversation = useCallback(() => {
     if (busy) stop();
-    if (userId) {
-      const { error: clearErrorResult } = await supabase
-        .from("ai_chat_messages")
-        .delete()
-        .eq("user_id", userId);
-      if (clearErrorResult) {
-        toast.error("Conversation could not be cleared.");
-        return;
-      }
-    }
     setMessages([]);
     clearError();
     setDraft("");
     textareaRef.current?.focus();
-  }, [busy, clearError, setMessages, stop, userId]);
+  }, [busy, clearError, setMessages, stop]);
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-5xl flex-col overflow-hidden rounded-2xl border border-border bg-surface/50 shadow-glow">
