@@ -44,6 +44,53 @@ export type Database = {
         }
         Relationships: []
       }
+      professionals: {
+        Row: {
+          active: boolean
+          areas: string[]
+          category_id: string
+          city: string
+          created_at: string
+          experience_years: number
+          id: string
+          name: string
+          phone: string | null
+          verified: boolean
+        }
+        Insert: {
+          active?: boolean
+          areas?: string[]
+          category_id: string
+          city?: string
+          created_at?: string
+          experience_years?: number
+          id?: string
+          name: string
+          phone?: string | null
+          verified?: boolean
+        }
+        Update: {
+          active?: boolean
+          areas?: string[]
+          category_id?: string
+          city?: string
+          created_at?: string
+          experience_years?: number
+          id?: string
+          name?: string
+          phone?: string | null
+          verified?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professionals_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_categories: {
         Row: {
           active: boolean
@@ -70,6 +117,41 @@ export type Database = {
           typical_issues?: string[]
         }
         Relationships: []
+      }
+      service_offerings: {
+        Row: {
+          active: boolean
+          category_id: string
+          created_at: string
+          id: string
+          name: string
+          price_inr: number
+        }
+        Insert: {
+          active?: boolean
+          category_id: string
+          created_at?: string
+          id?: string
+          name: string
+          price_inr: number
+        }
+        Update: {
+          active?: boolean
+          category_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          price_inr?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_offerings_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       service_requests: {
         Row: {
@@ -124,15 +206,39 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -259,6 +365,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
