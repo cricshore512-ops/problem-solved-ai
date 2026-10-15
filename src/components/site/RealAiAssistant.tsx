@@ -520,7 +520,7 @@ function ModeButton({
   );
 }
 
-function SignInPanel() {
+export function SignInPanel({ redirectPath = "/ai-assistant" }: { redirectPath?: string }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [signUp, setSignUp] = useState(false);
@@ -540,7 +540,7 @@ function SignInPanel() {
 
   const handleGoogle = async () => {
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/ai-assistant`,
+      redirect_uri: `${window.location.origin}${redirectPath}`,
     });
     if (result.error) toast.error(result.error.message);
   };
