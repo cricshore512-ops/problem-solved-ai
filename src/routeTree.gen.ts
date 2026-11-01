@@ -17,6 +17,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ForProfessionalsRouteImport } from './routes/for-professionals'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as VideoConsultationRouteImport } from './routes/video-consultation'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
@@ -60,6 +61,11 @@ const ServicesRoute = ServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VideoConsultationRoute = VideoConsultationRouteImport.update({
   id: '/video-consultation',
   path: '/video-consultation',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/for-professionals': typeof ForProfessionalsRoute
   '/how-it-works': typeof HowItWorksRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/video-consultation': typeof VideoConsultationRoute
   '/api/chat': typeof ApiChatRoute
 }
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/for-professionals': typeof ForProfessionalsRoute
   '/how-it-works': typeof HowItWorksRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/video-consultation': typeof VideoConsultationRoute
   '/api/chat': typeof ApiChatRoute
 }
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/for-professionals': typeof ForProfessionalsRoute
   '/how-it-works': typeof HowItWorksRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/video-consultation': typeof VideoConsultationRoute
   '/api/chat': typeof ApiChatRoute
 }
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
     | '/for-professionals'
     | '/how-it-works'
     | '/services'
+    | '/sitemap.xml'
     | '/video-consultation'
     | '/api/chat'
   fileRoutesByTo: FileRoutesByTo
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/for-professionals'
     | '/how-it-works'
     | '/services'
+    | '/sitemap.xml'
     | '/video-consultation'
     | '/api/chat'
   id:
@@ -143,6 +154,7 @@ export interface FileRouteTypes {
     | '/for-professionals'
     | '/how-it-works'
     | '/services'
+    | '/sitemap.xml'
     | '/video-consultation'
     | '/api/chat'
   fileRoutesById: FileRoutesById
@@ -156,6 +168,7 @@ export interface RootRouteChildren {
   ForProfessionalsRoute: typeof ForProfessionalsRoute
   HowItWorksRoute: typeof HowItWorksRoute
   ServicesRoute: typeof ServicesRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VideoConsultationRoute: typeof VideoConsultationRoute
   ApiChatRoute: typeof ApiChatRoute
 }
@@ -218,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/video-consultation': {
       id: '/video-consultation'
       path: '/video-consultation'
@@ -244,6 +264,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForProfessionalsRoute: ForProfessionalsRoute,
   HowItWorksRoute: HowItWorksRoute,
   ServicesRoute: ServicesRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   VideoConsultationRoute: VideoConsultationRoute,
   ApiChatRoute: ApiChatRoute,
 }
