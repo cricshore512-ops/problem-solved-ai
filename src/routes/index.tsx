@@ -20,6 +20,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { FinalCta } from "@/components/site/FinalCta";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "One Solve — Don't Search for a Service. Just Tell Us Your Problem." },
@@ -34,7 +35,10 @@ export const Route = createFileRoute("/")({
         content:
           "AI Understands. The Right Expert Connects. The Problem Gets Solved.",
       },
+      { property: "og:url", content: "https://connect-an-expert.lovable.app/" },
+
     ],
+    links: [{ rel: "canonical", href: "https://connect-an-expert.lovable.app/" }],
   }),
   component: HomePage,
 });

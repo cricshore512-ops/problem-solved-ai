@@ -7,6 +7,7 @@ import { GlassCard, PageHero, Section, SectionHeading } from "@/components/site/
 import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/about")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "About One Solve — The Future of Human Services" },
@@ -20,7 +21,10 @@ export const Route = createFileRoute("/about")({
         property: "og:description",
         content: "A world where the right help is always just a conversation away.",
       },
+      { property: "og:url", content: "https://connect-an-expert.lovable.app/about" },
+
     ],
+    links: [{ rel: "canonical", href: "https://connect-an-expert.lovable.app/about" }],
   }),
   component: AboutPage,
 });

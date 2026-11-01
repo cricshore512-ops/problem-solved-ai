@@ -7,6 +7,7 @@ import { GlassCard, PageHero, Section, SectionHeading } from "@/components/site/
 import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/video-consultation")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Video Consultation with Verified Experts | One Solve" },
@@ -21,7 +22,10 @@ export const Route = createFileRoute("/video-consultation")({
         content:
           "Live video consultations with verified professionals: faster support, lower cost, real-time visual inspection.",
       },
+      { property: "og:url", content: "https://connect-an-expert.lovable.app/video-consultation" },
+
     ],
+    links: [{ rel: "canonical", href: "https://connect-an-expert.lovable.app/video-consultation" }],
   }),
   component: VideoConsultationPage,
 });

@@ -9,6 +9,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/for-professionals")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "For Professionals — AI-Briefed Jobs & Smart Matching | One Solve" },
@@ -23,7 +24,10 @@ export const Route = createFileRoute("/for-professionals")({
         content:
           "AI-generated job briefs, smart matching, video consultations and transparent performance tracking.",
       },
+      { property: "og:url", content: "https://connect-an-expert.lovable.app/for-professionals" },
+
     ],
+    links: [{ rel: "canonical", href: "https://connect-an-expert.lovable.app/for-professionals" }],
   }),
   component: ForProfessionalsPage,
 });

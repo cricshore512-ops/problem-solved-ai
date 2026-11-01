@@ -87,6 +87,7 @@ function withHeaders(response: Response, extra: Record<string, string>) {
 }
 
 export const Route = createFileRoute("/api/chat")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       OPTIONS: async ({ request }) =>

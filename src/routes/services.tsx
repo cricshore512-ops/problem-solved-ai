@@ -6,6 +6,7 @@ import { GlassCard, PageHero, Section, SectionHeading } from "@/components/site/
 import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/services")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Service Ecosystem — Home, Growth & Professional Help | One Solve" },
@@ -20,7 +21,10 @@ export const Route = createFileRoute("/services")({
         content:
           "Home services, personal growth and professional help — matched by AI to the right verified expert.",
       },
+      { property: "og:url", content: "https://connect-an-expert.lovable.app/services" },
+
     ],
+    links: [{ rel: "canonical", href: "https://connect-an-expert.lovable.app/services" }],
   }),
   component: ServicesPage,
 });

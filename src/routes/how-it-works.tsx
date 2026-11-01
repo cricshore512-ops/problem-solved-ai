@@ -16,6 +16,7 @@ import { GlassCard, PageHero, Section, SectionHeading } from "@/components/site/
 import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/how-it-works")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "How It Works — AI Problem Discovery | One Solve" },
@@ -30,7 +31,10 @@ export const Route = createFileRoute("/how-it-works")({
         content:
           "Tell us the problem, AI analyses and matches you with the right verified professional.",
       },
+      { property: "og:url", content: "https://connect-an-expert.lovable.app/how-it-works" },
+
     ],
+    links: [{ rel: "canonical", href: "https://connect-an-expert.lovable.app/how-it-works" }],
   }),
   component: HowItWorksPage,
 });
