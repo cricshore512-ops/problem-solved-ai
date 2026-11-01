@@ -13,11 +13,16 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
+import { Route as CancellationRefundRouteImport } from './routes/cancellation-refund'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ForProfessionalsRouteImport } from './routes/for-professionals'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SupportPolicyRouteImport } from './routes/support-policy'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as VerificationPolicyRouteImport } from './routes/verification-policy'
 import { Route as VideoConsultationRouteImport } from './routes/video-consultation'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
@@ -41,6 +46,11 @@ const AiAssistantRoute = AiAssistantRouteImport.update({
   path: '/ai-assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CancellationRefundRoute = CancellationRefundRouteImport.update({
+  id: '/cancellation-refund',
+  path: '/cancellation-refund',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -56,6 +66,11 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
   path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
@@ -64,6 +79,21 @@ const ServicesRoute = ServicesRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupportPolicyRoute = SupportPolicyRouteImport.update({
+  id: '/support-policy',
+  path: '/support-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationPolicyRoute = VerificationPolicyRouteImport.update({
+  id: '/verification-policy',
+  path: '/verification-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VideoConsultationRoute = VideoConsultationRouteImport.update({
@@ -82,11 +112,16 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/ai-assistant': typeof AiAssistantRoute
+  '/cancellation-refund': typeof CancellationRefundRoute
   '/contact': typeof ContactRoute
   '/for-professionals': typeof ForProfessionalsRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/support-policy': typeof SupportPolicyRoute
+  '/terms': typeof TermsRoute
+  '/verification-policy': typeof VerificationPolicyRoute
   '/video-consultation': typeof VideoConsultationRoute
   '/api/chat': typeof ApiChatRoute
 }
@@ -95,11 +130,16 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/ai-assistant': typeof AiAssistantRoute
+  '/cancellation-refund': typeof CancellationRefundRoute
   '/contact': typeof ContactRoute
   '/for-professionals': typeof ForProfessionalsRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/support-policy': typeof SupportPolicyRoute
+  '/terms': typeof TermsRoute
+  '/verification-policy': typeof VerificationPolicyRoute
   '/video-consultation': typeof VideoConsultationRoute
   '/api/chat': typeof ApiChatRoute
 }
@@ -109,11 +149,16 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/ai-assistant': typeof AiAssistantRoute
+  '/cancellation-refund': typeof CancellationRefundRoute
   '/contact': typeof ContactRoute
   '/for-professionals': typeof ForProfessionalsRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/support-policy': typeof SupportPolicyRoute
+  '/terms': typeof TermsRoute
+  '/verification-policy': typeof VerificationPolicyRoute
   '/video-consultation': typeof VideoConsultationRoute
   '/api/chat': typeof ApiChatRoute
 }
@@ -124,11 +169,16 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/ai-assistant'
+    | '/cancellation-refund'
     | '/contact'
     | '/for-professionals'
     | '/how-it-works'
+    | '/privacy'
     | '/services'
     | '/sitemap.xml'
+    | '/support-policy'
+    | '/terms'
+    | '/verification-policy'
     | '/video-consultation'
     | '/api/chat'
   fileRoutesByTo: FileRoutesByTo
@@ -137,11 +187,16 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/ai-assistant'
+    | '/cancellation-refund'
     | '/contact'
     | '/for-professionals'
     | '/how-it-works'
+    | '/privacy'
     | '/services'
     | '/sitemap.xml'
+    | '/support-policy'
+    | '/terms'
+    | '/verification-policy'
     | '/video-consultation'
     | '/api/chat'
   id:
@@ -150,11 +205,16 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/ai-assistant'
+    | '/cancellation-refund'
     | '/contact'
     | '/for-professionals'
     | '/how-it-works'
+    | '/privacy'
     | '/services'
     | '/sitemap.xml'
+    | '/support-policy'
+    | '/terms'
+    | '/verification-policy'
     | '/video-consultation'
     | '/api/chat'
   fileRoutesById: FileRoutesById
@@ -164,11 +224,16 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   AiAssistantRoute: typeof AiAssistantRoute
+  CancellationRefundRoute: typeof CancellationRefundRoute
   ContactRoute: typeof ContactRoute
   ForProfessionalsRoute: typeof ForProfessionalsRoute
   HowItWorksRoute: typeof HowItWorksRoute
+  PrivacyRoute: typeof PrivacyRoute
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SupportPolicyRoute: typeof SupportPolicyRoute
+  TermsRoute: typeof TermsRoute
+  VerificationPolicyRoute: typeof VerificationPolicyRoute
   VideoConsultationRoute: typeof VideoConsultationRoute
   ApiChatRoute: typeof ApiChatRoute
 }
@@ -203,6 +268,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cancellation-refund': {
+      id: '/cancellation-refund'
+      path: '/cancellation-refund'
+      fullPath: '/cancellation-refund'
+      preLoaderRoute: typeof CancellationRefundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -224,6 +296,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HowItWorksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
@@ -236,6 +315,27 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/support-policy': {
+      id: '/support-policy'
+      path: '/support-policy'
+      fullPath: '/support-policy'
+      preLoaderRoute: typeof SupportPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification-policy': {
+      id: '/verification-policy'
+      path: '/verification-policy'
+      fullPath: '/verification-policy'
+      preLoaderRoute: typeof VerificationPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/video-consultation': {
@@ -260,11 +360,16 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   AiAssistantRoute: AiAssistantRoute,
+  CancellationRefundRoute: CancellationRefundRoute,
   ContactRoute: ContactRoute,
   ForProfessionalsRoute: ForProfessionalsRoute,
   HowItWorksRoute: HowItWorksRoute,
+  PrivacyRoute: PrivacyRoute,
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SupportPolicyRoute: SupportPolicyRoute,
+  TermsRoute: TermsRoute,
+  VerificationPolicyRoute: VerificationPolicyRoute,
   VideoConsultationRoute: VideoConsultationRoute,
   ApiChatRoute: ApiChatRoute,
 }

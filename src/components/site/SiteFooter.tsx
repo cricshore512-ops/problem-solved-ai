@@ -19,6 +19,16 @@ const groups = [
       { to: "/contact", label: "Contact" },
     ],
   },
+  {
+    title: "Legal",
+    links: [
+      { to: "/privacy", label: "Privacy Policy" },
+      { to: "/terms", label: "Terms of Service" },
+      { to: "/cancellation-refund", label: "Cancellation & Refunds" },
+      { to: "/support-policy", label: "Support & Complaints" },
+      { to: "/verification-policy", label: "Verification Policy" },
+    ],
+  },
 ];
 
 export function SiteFooter() {
