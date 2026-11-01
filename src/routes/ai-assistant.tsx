@@ -3,6 +3,7 @@ import { RealAiAssistant } from "@/components/site/RealAiAssistant";
 import { Section } from "@/components/site/Primitives";
 
 export const Route = createFileRoute("/ai-assistant")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Try the AI Service Assistant | One Solve" },

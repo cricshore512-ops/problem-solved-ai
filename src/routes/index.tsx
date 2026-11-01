@@ -20,6 +20,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { FinalCta } from "@/components/site/FinalCta";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "One Solve — Don't Search for a Service. Just Tell Us Your Problem." },

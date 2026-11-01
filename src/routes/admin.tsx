@@ -14,6 +14,7 @@ import {
 } from "@/lib/catalog-admin.functions";
 
 export const Route = createFileRoute("/admin")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Catalogue Admin | One Solve" },

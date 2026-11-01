@@ -6,6 +6,7 @@ import { GlassCard, PageHero, Section, SectionHeading } from "@/components/site/
 import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/services")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Service Ecosystem — Home, Growth & Professional Help | One Solve" },

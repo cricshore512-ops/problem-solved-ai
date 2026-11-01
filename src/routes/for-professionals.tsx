@@ -9,6 +9,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/for-professionals")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "For Professionals — AI-Briefed Jobs & Smart Matching | One Solve" },

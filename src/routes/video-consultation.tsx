@@ -7,6 +7,7 @@ import { GlassCard, PageHero, Section, SectionHeading } from "@/components/site/
 import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/video-consultation")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Video Consultation with Verified Experts | One Solve" },

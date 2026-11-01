@@ -16,6 +16,7 @@ import { GlassCard, PageHero, Section, SectionHeading } from "@/components/site/
 import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/how-it-works")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "How It Works — AI Problem Discovery | One Solve" },
