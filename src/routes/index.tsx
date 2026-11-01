@@ -35,7 +35,10 @@ export const Route = createFileRoute("/")({
         content:
           "AI Understands. The Right Expert Connects. The Problem Gets Solved.",
       },
+      { property: "og:url", content: "https://connect-an-expert.lovable.app/" },
+
     ],
+    links: [{ rel: "canonical", href: "https://connect-an-expert.lovable.app/" }],
   }),
   component: HomePage,
 });

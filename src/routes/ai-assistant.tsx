@@ -20,7 +20,10 @@ export const Route = createFileRoute("/ai-assistant")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:url", content: "https://connect-an-expert.lovable.app/ai-assistant" },
+
     ],
+    links: [{ rel: "canonical", href: "https://connect-an-expert.lovable.app/ai-assistant" }],
   }),
   component: AiAssistantPage,
 });

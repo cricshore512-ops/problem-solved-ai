@@ -21,7 +21,10 @@ export const Route = createFileRoute("/about")({
         property: "og:description",
         content: "A world where the right help is always just a conversation away.",
       },
+      { property: "og:url", content: "https://connect-an-expert.lovable.app/about" },
+
     ],
+    links: [{ rel: "canonical", href: "https://connect-an-expert.lovable.app/about" }],
   }),
   component: AboutPage,
 });
